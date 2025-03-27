@@ -1,0 +1,15 @@
+package com.BankingService.TransactionService.config;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@Getter
+@Setter
+@Component
+@ConfigurationProperties(prefix = "transaction.topic")
+public class TransactionProperties {
+    private String request;
+    private String response;
+}
