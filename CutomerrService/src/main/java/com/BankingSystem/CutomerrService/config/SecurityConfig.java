@@ -28,7 +28,8 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/api/users/register", "/api/users/login", "/api/users/exists/{id}" , "/api/users/email/{id}").permitAll() // ✅ Allow JWKS access
+                        .requestMatchers("/api/users/register", "/api/users/login").permitAll()
+                        .requestMatchers("/api/users/exists/{id}" , "/api/users/email/{id}").permitAll()// ✅ Allow JWKS access
                         .requestMatchers("/api/users/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

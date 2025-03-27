@@ -25,28 +25,24 @@ public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
 
-    // ✅ Login API
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> loginUser(@RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(userService.loginUser(loginRequest));
     }
 
-    // ✅ Register API
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> createUser(@RequestBody UserRequest userRequest) {
         return ResponseEntity.ok(userService.createUser(userRequest));
     }
 
-    // ✅ Get All Users - ADMIN only
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/admin/getAll")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    // ✅ Get User by ID - Both ADMIN and USER (ensure user can only access their own)
     @GetMapping("/admin/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }

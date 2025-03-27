@@ -53,11 +53,11 @@ public class UserService{
         }
 
         User user = convertToEntity(userRequest);
-        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));  // ✅ Encrypt password
-        user.setRole(Optional.ofNullable(userRequest.getRole()).orElse(Role.USER)); // ✅ Default role if not provided
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+        user.setRole(Optional.ofNullable(userRequest.getRole()).orElse(Role.USER));
 
         user = userRepository.save(user);
-        String token = jwtService.generateToken(user); // ✅ Ensure JWT service is working
+        String token = jwtService.generateToken(user);
 
         return new AuthenticationResponse(token);
     }

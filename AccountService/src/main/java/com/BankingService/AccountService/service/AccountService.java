@@ -65,14 +65,28 @@ public class AccountService {
         return "Balance: " + account.getBalance().toString();
     }
 
-    public List<String> getAccountStatus(Long id) {
-        List<Account> accounts = accountRepository.findByCustomerId(id);
+    public List<String> getAccountBalances(Long customerId) {
+        List<Account> accounts = accountRepository.findByCustomerId(customerId);
+
         if (accounts.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No accounts found for this customer.");
         }
+
         return accounts.stream()
-                .map(account -> "Status: " + account.getStatus().toString())
-                .collect(Collectors.toList());
+                .map(account -> account.getAccountNumber() + " - Balance: " + account.getBalance().toString())
+                .toList();
+    }
+
+    public List<String> getAccountStatuses(Long customerId) {
+        List<Account> accounts = accountRepository.findByCustomerId(customerId);
+
+        if (accounts.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No accounts found for this customer.");
+        }
+
+        return accounts.stream()
+                .map(account -> account.getAccountNumber() + " - Status: " + account.getStatus().toString())
+                .toList();
     }
 
     public Long getCustomerIdByAccountId(Long accountId) {

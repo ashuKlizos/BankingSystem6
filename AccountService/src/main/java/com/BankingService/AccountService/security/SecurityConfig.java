@@ -28,7 +28,9 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/api/accounts/create" ,"/api/accounts/all" , "/api/accounts/{id}/customer-id" , "/api/accounts/transfer").permitAll()
+                        .requestMatchers( "/api/accounts/{id}/customer-id").permitAll()
+                        .requestMatchers("/api/accounts/balance/{customerId}" , "/api/accounts/{id}"
+                                ,"/api/accounts/create" , "/api/accounts/status/{customerId}" , "/api/accounts/customer").hasAnyRole("USER" , "ADMIN")
                         .requestMatchers("/api/accounts/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

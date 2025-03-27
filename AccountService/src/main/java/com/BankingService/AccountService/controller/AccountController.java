@@ -4,7 +4,6 @@ import com.BankingService.AccountService.dto.AccountRequestDTO;
 import com.BankingService.AccountService.dto.AccountResponseDTO;
 import com.BankingService.AccountService.service.AccountService;
 import com.BankingService.AccountService.service.JwtService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,25 +20,11 @@ public class AccountController {
     private final AccountService accountService;
     private final JwtService jwtService;
 
-    private String getAuthToken() {
-        return (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
-    }
-
-    private Long getCustomerId() {
-        return Long.valueOf(jwtService.getCustomerId(getAuthToken()));
-    }
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<?> createAccount(@RequestBody AccountRequestDTO accountRequest, HttpServletRequest request) {
-        String authorizationHeader = request.getHeader("Authorization");
-        String token = (authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
-                ? authorizationHeader.substring(7)
-                : null;
-
-        Long customerId = Long.parseLong(jwtService.getCustomerId(token));
-        AccountResponseDTO responseDTO = accountService.createAccount(accountRequest, customerId);
-        return ResponseEntity.ok(responseDTO);
+    public ResponseEntity<AccountResponseDTO> createAccount(@RequestBody AccountRequestDTO accountRequest) {
+        return ResponseEntity.ok(accountService.createAccount(accountRequest, getCustomerId()));
     }
 
     @GetMapping("/{customerId}")
@@ -51,19 +36,13 @@ public class AccountController {
     @GetMapping("/balance/{customerId}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<List<String>> getAccountBalances(@PathVariable Long customerId) {
-        List<String> balances = accountService.getAccountsByCustomerId(customerId).stream()
-                .map(account -> account.getAccountNumber() + " - " + accountService.getAccountBalance(customerId))
-                .toList();
-        return ResponseEntity.ok(balances);
+        return ResponseEntity.ok(accountService.getAccountBalances(customerId));
     }
 
     @GetMapping("/status/{customerId}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<List<String>> getAccountStatuses(@PathVariable Long customerId) {
-        List<String> statuses = accountService.getAccountsByCustomerId(customerId).stream()
-                .map(account -> account.getAccountNumber() + " - " + accountService.getAccountStatus(customerId))
-                .toList();
-        return ResponseEntity.ok(statuses);
+        return ResponseEntity.ok(accountService.getAccountStatuses(customerId));
     }
 
     @GetMapping("/customer")
@@ -81,5 +60,16 @@ public class AccountController {
     @GetMapping("/{accountId}/customer-id")
     public Long getCustomerIdByAccountId(@PathVariable Long accountId) {
         return accountService.getCustomerIdByAccountId(accountId);
+    }
+
+    private String getAuthToken() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getCredentials().toString();
+    }
+
+    private Long getCustomerId() {
+        String token = getAuthToken();
+        String customerId = jwtService.getCustomerId(token);
+        return Long.valueOf(customerId);
     }
 }
