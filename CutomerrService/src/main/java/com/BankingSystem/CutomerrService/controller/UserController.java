@@ -5,17 +5,14 @@ import com.BankingSystem.CutomerrService.dto.LoginRequest;
 import com.BankingSystem.CutomerrService.dto.UserRequest;
 import com.BankingSystem.CutomerrService.dto.UserResponse;
 import com.BankingSystem.CutomerrService.entity.AuthenticationResponse;
-import com.BankingSystem.CutomerrService.entity.User;
 import com.BankingSystem.CutomerrService.repository.UserRepository;
 import com.BankingSystem.CutomerrService.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -73,12 +70,6 @@ public class UserController {
 
     @GetMapping("/email/{id}")
     public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable Long id) {
-        Optional<User> customer = userRepository.findById(id);
-        if (customer.isPresent()) {
-            CustomerResponse response = new CustomerResponse(customer.get().getId(), customer.get().getEmail());
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+        return ResponseEntity.ok(userService.getEmailandId(id));
     }
 }

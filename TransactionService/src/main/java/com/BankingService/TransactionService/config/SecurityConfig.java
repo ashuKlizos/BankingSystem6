@@ -35,8 +35,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/transactions/**").authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/api/transactions").hasRole("USER")
+                        .requestMatchers("/api/transactions/{id}").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // ✅ Stateless session
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

@@ -59,12 +59,6 @@ public class AccountService {
                 .stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    public String getAccountBalance(Long id) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found1"));
-        return "Balance: " + account.getBalance().toString();
-    }
-
     public List<String> getAccountBalances(Long customerId) {
         List<Account> accounts = accountRepository.findByCustomerId(customerId);
 

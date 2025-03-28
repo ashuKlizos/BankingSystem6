@@ -1,6 +1,7 @@
 package com.BankingSystem.CutomerrService.service;
 
 
+import com.BankingSystem.CutomerrService.dto.CustomerResponse;
 import com.BankingSystem.CutomerrService.dto.LoginRequest;
 import com.BankingSystem.CutomerrService.dto.UserRequest;
 import com.BankingSystem.CutomerrService.dto.UserResponse;
@@ -47,6 +48,12 @@ public class UserService{
         return convertToDTO(user);
     }
 
+    public CustomerResponse getEmailandId(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id " + id ));
+        return new CustomerResponse(user.getId() , user.getEmail());
+    }
+
     public AuthenticationResponse createUser(UserRequest userRequest) {
         if (userRepository.findByUsername(userRequest.getUsername()).isPresent()) {
             throw new UserExistException("Username already exists");
@@ -79,6 +86,11 @@ public class UserService{
         User user = userRepository.findById(id).map(existingUser -> {
             existingUser.setUsername(updatedUser.getUsername());
             existingUser.setEmail(updatedUser.getEmail());
+            existingUser.setFirstName(updatedUser.getFirstName());
+            existingUser.setLastName(updatedUser.getLastName());
+            existingUser.setPassword(updatedUser.getPassword());
+            existingUser.setRole(updatedUser.getRole());
+            existingUser.setDob(updatedUser.getDob());
             if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             }

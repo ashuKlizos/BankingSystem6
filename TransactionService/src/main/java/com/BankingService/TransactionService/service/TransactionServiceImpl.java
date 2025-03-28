@@ -50,7 +50,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .amount(transactionRequest.getAmount())
                 .transactionDate(LocalDateTime.now())
                 .transactionType(transactionType)
-                .status(TransactionStatus.PENDING)
+                .status(TransactionStatus.SUCCESS)
                 .build();
 
         Transaction savedTransaction = transactionRepository.save(transaction);
